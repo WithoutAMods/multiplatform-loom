@@ -1,0 +1,8 @@
+plugins {
+	id 'dev.architectury.loom' version '0.12.local'
+}
+
+dependencies {
+	minecraft("com.mojang:minecraft:1.16.5")
+	mappings(loom.officialMojangMappings())
+}

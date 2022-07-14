@@ -2,6 +2,6 @@
 /*
 
 !/src
-!/build.gradle
+!/build.gradle.kts
 !/.gitignore
 !/test-project
