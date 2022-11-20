@@ -26,6 +26,7 @@ package net.fabricmc.loom.api;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.gradle.api.Action;
@@ -216,14 +217,12 @@ public interface LoomGradleExtensionAPI {
 
 	boolean isSilentMojangMappingsLicenseEnabled();
 
-	Provider<ModPlatform> getPlatform();
-
 	default boolean isForge() {
-		return getPlatform().get() == ModPlatform.FORGE;
+		return getPlatforms().get().contains(ModPlatform.FORGE);
 	}
 
 	default boolean isQuilt() {
-		return getPlatform().get() == ModPlatform.QUILT;
+		return getPlatforms().get().contains(ModPlatform.QUILT);
 	}
 
 	void setGenerateSrgTiny(Boolean generateSrgTiny);
@@ -252,4 +251,9 @@ public interface LoomGradleExtensionAPI {
 	ForgeExtensionAPI getForge();
 
 	void forge(Action<ForgeExtensionAPI> action);
+
+	// ====================
+	//  Multiplatform Loom
+	// ====================
+	Provider<Set<ModPlatform>> getPlatforms();
 }

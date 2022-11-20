@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
+import java.util.Set;
 
 import com.google.gson.JsonObject;
 import org.gradle.api.logging.Logger;
@@ -35,6 +36,19 @@ import org.jetbrains.annotations.Nullable;
 
 public final class ModUtils {
 	private ModUtils() {
+	}
+
+	public static boolean isMod(File file, Set<ModPlatform> platforms) {
+		return isMod(file.toPath(), platforms);
+	}
+
+	public static boolean isMod(Path input, Set<ModPlatform> platforms) {
+		for (ModPlatform platform : platforms) {
+			if (isMod(input, platform)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean isMod(File file, ModPlatform platform) {

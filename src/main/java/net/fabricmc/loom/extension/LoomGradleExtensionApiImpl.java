@@ -27,9 +27,11 @@ package net.fabricmc.loom.extension;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import com.google.common.base.Suppliers;
@@ -76,7 +78,6 @@ import net.fabricmc.loom.util.gradle.SourceSetHelper;
  * This class implements the public extension api.
  */
 public abstract class LoomGradleExtensionApiImpl implements LoomGradleExtensionAPI {
-	private static final String FORGE_PROPERTY = "loom.forge";
 	private static final String PLATFORM_PROPERTY = "loom.platform";
 
 	protected final DeprecationHelper deprecationHelper;
@@ -107,7 +108,7 @@ public abstract class LoomGradleExtensionApiImpl implements LoomGradleExtensionA
 	// ===================
 	//  Architectury Loom
 	// ===================
-	private Provider<ModPlatform> platform;
+	private Provider<Set<ModPlatform>> platforms;
 	private boolean silentMojangMappingsLicense = false;
 	public Boolean generateSrgTiny = null;
 	private final List<String> tasksBeforeRun = Collections.synchronizedList(new ArrayList<>());
@@ -167,27 +168,25 @@ public abstract class LoomGradleExtensionApiImpl implements LoomGradleExtensionA
 			interfaceInjection.getInterfaceInjectionSourceSets().finalizeValueOnRead();
 			interfaceInjection.getEnableDependencyInterfaceInjection().convention(true).finalizeValueOnRead();
 		});
-		this.platform = project.provider(Suppliers.memoize(() -> {
+		this.platforms = project.provider(Suppliers.memoize(() -> {
+			Set<ModPlatform> platforms = new HashSet<>();
 			Object platformProperty = project.findProperty(PLATFORM_PROPERTY);
 
 			if (platformProperty != null) {
-				ModPlatform platform = ModPlatform.valueOf(Objects.toString(platformProperty).toUpperCase(Locale.ROOT));
+				for (String platformString : platformProperty.toString().split(",")) {
+					ModPlatform platform = ModPlatform.valueOf(platformString.toUpperCase(Locale.ROOT));
+					platforms.add(platform);
 
-				if (platform.isExperimental()) {
-					project.getLogger().warn("Project " + project.getPath() + " is using experimental mod platform " + platform.name() + ". Please report any issues!");
+					if (platform.isExperimental()) {
+						project.getLogger().warn("Project " + project.getPath() + " is using experimental mod platform " + platform.name() + ". Please report any issues!");
+					}
 				}
-
-				return platform;
+			} else {
+				platforms.add(ModPlatform.FABRIC);
+				platforms.add(ModPlatform.FORGE);
 			}
 
-			Object forgeProperty = project.findProperty(FORGE_PROPERTY);
-
-			if (forgeProperty != null) {
-				project.getLogger().warn("Project " + project.getPath() + " is using property " + FORGE_PROPERTY + " to enable forge mode. Please use '" + PLATFORM_PROPERTY + " = forge' instead!");
-				return Boolean.parseBoolean(Objects.toString(forgeProperty)) ? ModPlatform.FORGE : ModPlatform.FABRIC;
-			}
-
-			return ModPlatform.FABRIC;
+			return platforms;
 		})::get);
 		this.launchConfigs = project.container(LaunchProviderSettings.class,
 				baseName -> new LaunchProviderSettings(project, baseName));
@@ -414,8 +413,8 @@ public abstract class LoomGradleExtensionApiImpl implements LoomGradleExtensionA
 	}
 
 	@Override
-	public Provider<ModPlatform> getPlatform() {
-		return platform;
+	public Provider<Set<ModPlatform>> getPlatforms() {
+		return platforms;
 	}
 
 	@Override

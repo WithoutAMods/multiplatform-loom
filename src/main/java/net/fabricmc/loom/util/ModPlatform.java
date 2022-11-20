@@ -61,7 +61,7 @@ public enum ModPlatform {
 	}
 
 	public static void assertPlatform(LoomGradleExtensionAPI extension, ModPlatform platform, Supplier<String> message) {
-		if (extension.getPlatform().get() != platform) {
+		if (!extension.getPlatforms().get().contains(platform)) {
 			throw new GradleException(message.get());
 		}
 	}

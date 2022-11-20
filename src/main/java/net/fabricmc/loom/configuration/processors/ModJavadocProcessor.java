@@ -37,6 +37,7 @@ import java.util.Set;
 
 import com.google.gson.JsonObject;
 import org.gradle.api.Project;
+import org.gradle.internal.impldep.org.glassfish.jaxb.core.v2.TODO;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,43 +65,45 @@ public final class ModJavadocProcessor implements JarProcessor, GenerateSourcesT
 
 	@Nullable
 	public static ModJavadocProcessor create(Project project) {
-		final LoomGradleExtension extension = LoomGradleExtension.get(project);
-		final ModPlatform platform = extension.getPlatform().get();
-
-		// Not supported on Forge.
-		if (platform == ModPlatform.FORGE) {
-			return null;
-		}
-
-		final List<ModJavadoc> javadocs = new ArrayList<>();
-
-		for (RemapConfigurationSettings entry : extension.getRemapConfigurations()) {
-			final Set<File> artifacts = entry.getSourceConfiguration().get().resolve();
-
-			for (File artifact : artifacts) {
-				if (!ModUtils.isMod(artifact.toPath(), platform)) {
-					continue;
-				}
-
-				final ModJavadoc modJavadoc;
-
-				try {
-					modJavadoc = ModJavadoc.fromModJar(artifact.toPath());
-				} catch (IOException e) {
-					throw new UncheckedIOException("Failed to read mod jar (%s)".formatted(artifact), e);
-				}
-
-				if (modJavadoc != null) {
-					javadocs.add(modJavadoc);
-				}
-			}
-		}
-
-		if (javadocs.isEmpty()) {
-			return null;
-		}
-
-		return new ModJavadocProcessor(javadocs);
+		return null;
+//		TODO
+//		final LoomGradleExtension extension = LoomGradleExtension.get(project);
+//		final ModPlatform platform = extension.getPlatform().get();
+//
+//		// Not supported on Forge.
+//		if (platform == ModPlatform.FORGE) {
+//			return null;
+//		}
+//
+//		final List<ModJavadoc> javadocs = new ArrayList<>();
+//
+//		for (RemapConfigurationSettings entry : extension.getRemapConfigurations()) {
+//			final Set<File> artifacts = entry.getSourceConfiguration().get().resolve();
+//
+//			for (File artifact : artifacts) {
+//				if (!ModUtils.isMod(artifact.toPath(), platform)) {
+//					continue;
+//				}
+//
+//				final ModJavadoc modJavadoc;
+//
+//				try {
+//					modJavadoc = ModJavadoc.fromModJar(artifact.toPath());
+//				} catch (IOException e) {
+//					throw new UncheckedIOException("Failed to read mod jar (%s)".formatted(artifact), e);
+//				}
+//
+//				if (modJavadoc != null) {
+//					javadocs.add(modJavadoc);
+//				}
+//			}
+//		}
+//
+//		if (javadocs.isEmpty()) {
+//			return null;
+//		}
+//
+//		return new ModJavadocProcessor(javadocs);
 	}
 
 	@Override

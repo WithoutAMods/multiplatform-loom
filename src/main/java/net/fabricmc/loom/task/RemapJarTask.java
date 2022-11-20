@@ -79,6 +79,7 @@ import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskDependency;
+import org.gradle.internal.impldep.org.glassfish.jaxb.core.v2.TODO;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -222,7 +223,9 @@ public abstract class RemapJarTask extends AbstractRemapJarTask {
 				throw new RuntimeException("Forge must have useLegacyMixinAp enabled");
 			}
 
-			params.getPlatform().set(extension.getPlatform());
+//			TODO
+//			params.getPlatform().set(extension.getPlatform());
+			params.getPlatform().set(ModPlatform.FORGE);
 
 			if (getInjectAccessWidener().get() && extension.getAccessWidenerPath().isPresent()) {
 				params.getInjectAccessWidener().set(extension.getAccessWidenerPath());
@@ -241,46 +244,49 @@ public abstract class RemapJarTask extends AbstractRemapJarTask {
 		final LoomGradleExtension extension = LoomGradleExtension.get(getProject());
 		final MixinExtension mixinExtension = extension.getMixin();
 		Collection<String> allMixinConfigs = null;
-
-		final JsonObject fabricModJson = extension.getPlatform().get() == ModPlatform.FABRIC ? ModUtils.getFabricModJson(getInputFile().getAsFile().get().toPath()) : null;
+//		TODO
+//		final JsonObject fabricModJson = extension.getPlatform().get() == ModPlatform.FABRIC ? ModUtils.getFabricModJson(getInputFile().getAsFile().get().toPath()) : null;
+		final JsonObject fabricModJson = null;
 
 		if (fabricModJson == null) {
-			if (extension.getPlatform().get() == ModPlatform.QUILT) {
-				try {
-					byte[] bytes = ZipUtils.unpackNullable(getInputFile().getAsFile().get().toPath(), "quilt.mod.json");
-
-					if (bytes != null) {
-						JsonObject json = LoomGradlePlugin.GSON.fromJson(new InputStreamReader(new ByteArrayInputStream(bytes)), JsonObject.class);
-						JsonElement mixins = json.has("mixin") ? json.get("mixin") : json.get("mixins");
-
-						if (mixins != null) {
-							if (mixins.isJsonPrimitive()) {
-								allMixinConfigs = Collections.singletonList(mixins.getAsString());
-							} else if (mixins.isJsonArray()) {
-								allMixinConfigs = StreamSupport.stream(mixins.getAsJsonArray().spliterator(), false)
-										.map(JsonElement::getAsString)
-										.collect(Collectors.toList());
-							} else {
-								throw new RuntimeException("Unknown mixin type: " + mixins.getClass().getName());
-							}
-						} else {
-							allMixinConfigs = Collections.emptyList();
-						}
-					}
-				} catch (IOException e) {
-					throw new RuntimeException("Cannot read file quilt.mod.json in the jar.", e);
-				}
-			}
+//			TODO
+//			if (extension.getPlatform().get() == ModPlatform.QUILT) {
+//				try {
+//					byte[] bytes = ZipUtils.unpackNullable(getInputFile().getAsFile().get().toPath(), "quilt.mod.json");
+//
+//					if (bytes != null) {
+//						JsonObject json = LoomGradlePlugin.GSON.fromJson(new InputStreamReader(new ByteArrayInputStream(bytes)), JsonObject.class);
+//						JsonElement mixins = json.has("mixin") ? json.get("mixin") : json.get("mixins");
+//
+//						if (mixins != null) {
+//							if (mixins.isJsonPrimitive()) {
+//								allMixinConfigs = Collections.singletonList(mixins.getAsString());
+//							} else if (mixins.isJsonArray()) {
+//								allMixinConfigs = StreamSupport.stream(mixins.getAsJsonArray().spliterator(), false)
+//										.map(JsonElement::getAsString)
+//										.collect(Collectors.toList());
+//							} else {
+//								throw new RuntimeException("Unknown mixin type: " + mixins.getClass().getName());
+//							}
+//						} else {
+//							allMixinConfigs = Collections.emptyList();
+//						}
+//					}
+//				} catch (IOException e) {
+//					throw new RuntimeException("Cannot read file quilt.mod.json in the jar.", e);
+//				}
+//			}
 
 			if (allMixinConfigs == null && getReadMixinConfigsFromManifest().get()) {
 				allMixinConfigs = readMixinConfigsFromManifest();
 			}
 
 			if (allMixinConfigs == null) {
-				if (extension.getPlatform().get() == ModPlatform.QUILT) {
-					getProject().getLogger().warn("Could not find quilt.mod.json file in: " + getInputFile().getAsFile().get().getName());
-					return;
-				}
+//				TODO
+//				if (extension.getPlatform().get() == ModPlatform.QUILT) {
+//					getProject().getLogger().warn("Could not find quilt.mod.json file in: " + getInputFile().getAsFile().get().getName());
+//					return;
+//				}
 
 				getProject().getLogger().warn("Could not find fabric.mod.json file in: " + getInputFile().getAsFile().get().getName());
 				return;

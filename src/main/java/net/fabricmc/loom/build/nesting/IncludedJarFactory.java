@@ -40,6 +40,9 @@ import java.util.function.Supplier;
 import com.google.common.collect.Sets;
 import com.google.common.hash.Hashing;
 import com.google.gson.JsonObject;
+
+import net.fabricmc.loom.util.ModPlatform;
+
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -168,7 +171,7 @@ public final class IncludedJarFactory {
 	}
 
 	private File getNestableJar(final File input, final Metadata metadata) {
-		if (ModUtils.isMod(input, LoomGradleExtension.get(project).getPlatform().get())) {
+		if (ModUtils.isMod(input, LoomGradleExtension.get(project).getPlatforms().get())) {
 			// Input is a mod, nothing needs to be done.
 			return input;
 		}
